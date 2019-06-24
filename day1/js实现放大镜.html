@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			/*去掉网页默认边距*/
+			*{
+				margin: 0px;
+				padding: 0px;
+			}
+			#content{
+				width: 400px;
+				height: 500px;
+				background: red;
+			}
+			/*设置显示图片样式
+			 两个选择器都会执行的样式，使用逗号分隔
+			 * */
+			#showDiv,#showImg{
+				width: 400px;
+				height: 400px;
+			}
+			/*设置小图标样式*/
+			ul li,.img_one{
+				width: 100px;
+				height: 100px;
+				list-style: none;
+				float: left;
+				/*鼠标覆盖显示手指样式*/
+				cursor: pointer;
+			}
+			/*设置阴影区域样式*/
+			#shadow{
+				width: 100px;
+				height: 100px;
+				background: rgba(0,229,238,0.5);
+				/*将span变为块级元素*/
+				display: block;
+				/*设置绝对定位*/
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				/*默认隐藏*/
+				display: none;
+			}
+			/*设置div样式*/
+			#bigDiv{
+				width: 200px;
+				height: 200px;
+				position: absolute;
+				top: 0px;
+				left: 400px;
+				/*溢出时隐藏*/
+				overflow: hidden;
+				display: none;
+			}
+			#bigImg{
+				position: absolute;
+				left: 0px;
+				top: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<!--脉脉-->
+		<div id="content">
+			<div id="showDiv">
+				<!--唯一标示-->
+				<img id="showImg" src="img/small1.jpg"/>
+				<!--设置阴影区域-->
+				<span id="shadow"></span>
+			</div>
+			<!--存放放大图片的div-->
+			<div id="bigDiv">
+				<img id="bigImg" src="img/big1.jpg"/>
+			</div>
+			<ul>
+				<!--src；图片路径  alt:图片显示失败时给出的文字提示-->
+				<!--自定义属性:big-src-->
+				<li><img class="img_one" src="img/small1.jpg" big-src="img/big1.jpg" /></li>
+				<li><img class="img_one" src="img/small2.jpg" big-src="img/big2.jpg" /></li>
+				<li><img class="img_one" src="img/small3.jpg" big-src="img/big3.jpg"  /></li>
+				<li><img class="img_one" src="img/small4.jpg" big-src="img/big4.jpg" /></li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//鼠标覆盖小图切换图片
+		//获取所有的小图
+		//getElementsByClassName:返回集合、数组
+		// var const let
+		var imgList = document.getElementsByClassName("img_one");
+		//获取showimg对象
+		var showImg = document.getElementById("showImg");
+		//获取showDIv对象
+		var showDiv = document.getElementById("showDiv");
+		//获取大图对象
+		var bigImg = document.getElementById("bigImg");
+		//遍历所有图片
+		for(var i=0;i<imgList.length;i++){
+			var imgOne = imgList[i];
+			//给每一张图片添加鼠标覆盖事件
+			imgOne.onmouseover = function(){
+				//获取当前覆盖的图片的src值
+				// this:当前对象(当前正在覆盖的这个对象)  self
+				showImg.src = this.src;
+				//dom对象获取自定义属性的值   getAttribute:获取自定义属性的值
+				bigImg.src = this.getAttribute("big-src");
+			}
+		}
+		//给showDiv添加鼠标移动事件
+		// e:event
+		//将鼠标坐标通过鼠标移动事件传递到方法中
+		//获取阴影区域
+		var shadow = document.getElementById("shadow");
+		var bigDiv = document.getElementById("bigDiv");
+		showDiv.onmousemove = function(e){
+			//显示阴影区域、大图div
+			shadow.style.display = "block";
+			bigDiv.style.display = "block";
+			//获取鼠标的横纵坐标 // pmp
+			var pageX = e.clientX;
+			var pageY = e.clientY;
+			//计算最大横向偏移量
+			var maxRight = showDiv.offsetWidth-shadow.offsetWidth;
+			//计算最大纵向偏移量
+			var maxTop = showDiv.offsetHeight-shadow.offsetHeight;
+			//计算实际坐标
+			//魔鬼数字
+			//shadow.offsetWidth：shadow的宽度
+			//shadow.offsetHeight:shadow的高度
+			var x = pageX-shadow.offsetWidth/2;
+			var y = pageY-shadow.offsetHeight/2;
+			//对x,y范围做限制
+			if(x<=0){
+				x = 0;
+			}
+			if(y<=0){
+				y = 0;
+			}
+			if(x>=maxRight){
+				x = maxRight;
+			}
+			if(y>=maxTop){
+				y = maxTop
+			}
+			//将横纵坐标赋值给阴影区域
+			shadow.style.left = x+"px";
+			shadow.style.top = y+"px";
+			
+			//计算放大区域对应的坐标
+			//shadow.offsetLeft:获取shadow的左偏移量
+			var bigX = shadow.offsetLeft*bigImg.offsetWidth/showImg.offsetWidth;
+			var bigY = shadow.offsetTop*bigImg.offsetHeight/showImg.offsetHeight;
+			//将横纵坐标赋值给大图
+			bigImg.style.left = -bigX+"px";
+			bigImg.style.top = -bigY+"px";
+		}
+		//鼠标移出隐藏
+		showDiv.onmouseout = function(){
+			//隐藏阴影和大图div
+			shadow.style.display = "none";
+			bigDiv.style.display = "none";
+		}
+	</script>
+</html>
